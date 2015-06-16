@@ -4,6 +4,8 @@
 	<head>
 	
 		<meta charset="utf-8">
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+		<script src="naver.js"></script>
 		<link rel="stylesheet" type="text/css" href="naver.css">
 	
 	</head>
@@ -52,6 +54,771 @@
 				
 	</body>
 	
+	<script>
+
+				var w = 900;
+				var h = 800;
+				var w2 = 900;
+				var h2 = 450;
+				var r = 200;
+				var tr = 20;
+				var mult = 4;
+				var TS = 30;
+
+				var month = ["_2005", "_2006", "_2007", "_2008", "_2009", "_2010", "_2011", "_2012", "_2013", "_2014", "_2015"];	
+				var data;
+				var dataset3 = [];
+				var dataName = ['text._2005', 'text._2006', 'text._2007', 'text._2008', 'text._2009', 
+									 'text._2010', 'text._2011', 'text._2012', 'text._2013', 'text._2014', 'text._2015'];
+				var monT = [['Jan', w/2, 75-tr],
+								['Apr', w/2+340, h/2-tr],
+								['Jun', w/2, 730-tr],
+								['Sep', w/2-340, h/2-tr]];
+				var exp1 = [["일주일 단위", w/2 + 400, 30, 'rgba(99, 100, 91, 0.3)'],
+								["(06년과 12년은 53주)", w/2 + 400, 50, 'rgba(99, 100, 91, 0.3)'],
+								['■  naver', w/2 + 400, 80, 'rgba(27, 113, 212, 0.8)'],
+								['■  tistory', w/2 + 400, 100, 'rgba(232, 162, 205, 0.8)']];
+				var exp2 = [["월 단위", 102, 30, 'rgba(99, 100, 91, 0.3)'],
+								['●  naver', 1175.5, 30, 'rgba(27, 113, 212, 0.8)'],
+								['●  tistory', 1239.5, 30, 'rgba(232, 162, 205, 0.8)']];
+				var circleD = [220, 240, 260, 280, 300];
+				var numLine = [[5,'5'],[10,'10'],[15,'15'],[20,'20'],[25,'25'],[30,'30'],[35,'35'],[40,'40'],[45,'45'],[50,'50'],[55,'55'],[60,'60']];
+				var yearLine = [[1, '2005'],[2, '2006'],[3, '2007'],[4, '2008'],[5, '2009'],[6, '2010'],[7, '2011'],[8, '2012'],[9, '2013'],[10, '2014']];
+				var yearLine2 = [[1, '2005'],[2, '2006'],[3, '2007'],[4, '2008'],[5, '2009'],[6, '2010'],[7, '2011'],[8, '2012'],[9, '2013'],[10, '2014'],[11, '2015']];
+				var school = [[1.5, '중학생'], [4.5, '고등학생'], [6.75, '전 대학'], [7.75, '반수'], [9.5, '지금 대학']];
+				var school2 = [[0, 3, 'rgba(156, 178, 214, 0.13)'], 
+									[3, 6, 'rgba(156, 158, 214, 0.13)'], 
+									[6, 7.5, 'rgba(203, 156, 214, 0.13)'], 
+									[7.5, 8, 'rgba(212, 156, 214, 0.13)'], 
+									[8, 11, 'rgba(214, 156, 189, 0.13)']];
+				var yearLine3 = ['2006'];
+
+				for(var i = 0; i < 11; i++){		
+
+					var year = 2005+i;
+					var x = h/2+350;
+					var y = w/2-250+50*i;
+					var color = 'rgba('+ (255-10*i)  + ', 196, 253, 1)'
+
+					var ss = [year, x, y, color];
+					dataset3.push(ss);			
+
+				}								
+
+				var xScale = d3.scale.linear()
+									.domain([0, 52])
+									.range([182, 542]);
+		
+				var xScale2 = d3.scale.ordinal()
+									.domain(d3.range(52))
+									.rangeRoundBands([0, r*2*Math.PI], 0.3);
+		
+				var xScale22 = d3.scale.linear()
+									.domain([0, 53])
+									.range([182, 542]);
+				
+				var xScale222 = d3.scale.ordinal()
+									.domain(d3.range(53))
+									.rangeRoundBands([0, r*2*Math.PI], 0.3);
+
+				var yScale = d3.scale.linear()
+									.domain([0, 26])
+									.range([0, 300]);		
+		
+		
+		
+//1번그래프	
+		
+				var svg = d3.select('#graph1')
+								.append('svg:svg')
+								.attr('width', w)
+								.attr('height', h);
+		
+				var circles = svg.selectAll('circle').data(circleD).enter().append('circle')
+								  .attr('cx', w/2)
+								  .attr('cy', h/2-tr)
+								  .attr('r', function(d){ return d; })
+				              .attr('fill', 'none')
+								  .attr('stroke', 'rgba(99, 100, 91, 0.1)');
+
+				var rect1 = svg.selectAll('rect.rect1').data(naver[1]).enter().append('rect')
+								  .attr('class', 'rect1')
+								  .attr('width', xScale2.rangeBand())
+								  .attr('height', function(d){ return d*mult })
+								  .attr('x', w/2)
+								  .attr('y', h/2+r)
+								  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+								  .attr('stroke', 'rgba(255, 0, 255, 0)')
+								  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+		
+				var rect2 = svg.selectAll('rect.rect2').data(sum[1]).enter().append('rect')
+								  .attr('class', 'rect2')
+								  .attr('width', xScale2.rangeBand())
+								  .attr('height', function(d){ return d*mult })
+								  .attr('x', w/2)
+								  .attr('y', h/2+r)
+								  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+								  .attr('stroke', 'rgba(255, 0, 255, 0)')
+								  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+		
+				var text = svg.selectAll('text').data(dataset3).enter().append('text')
+								  .attr('class', function(d, i){ return month[i]; })
+								  .text(function(d){ return d[0]; })
+								  .attr('text-anchor', 'middle')
+								  .attr('x', function(d){ return d[2]; })
+								  .attr('y', function(d){ return d[1]; })
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', '13px')
+								  .attr('font-weight', 'bold')
+								  .attr('fill', function(d){ return d[3] })
+								  .style('cursor', 'pointer')
+								  .on('mouseover', function(){
+									  
+									  d3.select(this)
+									  	 .attr('fill', 'rgb(0, 98, 255)');									  
+								  })
+								  .on('mouseout', function(){
+								  
+								  	  d3.select(this)
+									  	 .attr('fill', function(d){ return d[3] });	
+								  });
+		
+		
+				var text2 = svg.selectAll('text.text2').data(monT).enter().append('text')
+								  .attr('class', 'text2')
+								  .text(function(d){ return d[0]; })
+								  .attr('text-anchor', 'middle')
+								  .attr('x', function(d){ return d[1]; })
+								  .attr('y', function(d){ return d[2]; })
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', '13px')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');
+		
+				var text3 = svg.selectAll('text.text3').data(exp1).enter().append('text')
+								  .attr('class', 'text3')
+								  .text(function(d){ return d[0]; })
+								  .attr('text-anchor', 'middle')
+								  .attr('x', function(d){ return d[1]; })
+								  .attr('y', function(d){ return d[2]; })
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', '13px')
+								  .attr('text-anchor', 'end')
+								  .attr('fill', function(d){ return d[3]; });
+		
+				var text7 = svg.selectAll('text.text7').data(yearLine3).enter().append('text')
+								  .attr('class', 'text7')
+								  .text(function(d){ return d; })
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');
+		
+		
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+				svg.selectAll('text._2005')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[0]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+									  
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[0]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+				
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2005')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+									  
+						
+				 );
+									 
+		
+				svg.selectAll('text._2006')
+							 	 .on('click', function(){
+					
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[1]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale222.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale22(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+									  
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[1]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale222.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale22(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2006')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+				 svg.selectAll('text._2007')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[2]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[2]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2007')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );		
+		
+				 svg.selectAll('text._2008')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[3]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[3]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2008')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+				 svg.selectAll('text._2009')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[4]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[4]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2009')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+		       svg.selectAll('text._2010')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[5]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[5]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2010')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+		       svg.selectAll('text._2011')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[6]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+									  
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[6]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+						var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2011')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+				 svg.selectAll('text._2012')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[7]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale222.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale22(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					  var rect2 = svg.selectAll('rect.rect2').data(sum[7]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale222.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale22(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+					  var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2012')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+				 svg.selectAll('text._2013')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[8]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					  var rect2 = svg.selectAll('rect.rect2').data(sum[8]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+					  var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2013')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+			    svg.selectAll('text._2014')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[9]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					  var rect2 = svg.selectAll('rect.rect2').data(sum[9]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+					  var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2014')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+		
+				 svg.selectAll('text._2015')
+							 	 .on('click', function(){
+				
+						var rect1 = svg.selectAll('rect.rect1').data(naver[10]).transition().duration(1000)
+										  .attr('class', 'rect1')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(27, 113, 212, 0.53)');
+					 
+					   var rect2 = svg.selectAll('rect.rect2').data(sum[10]).transition().duration(1000)
+										  .attr('class', 'rect2')
+										  .attr('width', xScale2.rangeBand())
+										  .attr('height', function(d){ return d*mult })
+										  .attr('x', w/2)
+										  .attr('y', h/2+r)
+										  .attr('transform', function(d, i){ return 'rotate('+ (xScale(i)) +', ' + (w/2) + ', ' + ((h/2)-tr) + ')' })
+										  .attr('stroke', 'rgba(255, 0, 255, 0)')
+										  .attr('fill', 'rgba(212, 27, 141, 0.2)');
+									  
+					   var text7 = svg.selectAll('text.text7').data(yearLine3)
+								  .attr('class', 'text7')
+								  .text('2015')
+								  .attr('text-anchor', 'middle')
+								  .attr('x', w/2)
+								  .attr('y', h/2-5)
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', TS + 'px')
+								  .attr('text-anchor', 'middle')
+								  .attr('fill', 'rgba(99, 100, 91, 0.3)');}
+				 );
+			
+	
+		
+		
+//2번그래프		
+	
+		var lineData = [];
+		var lineData2 = [];
+		
+		var w2 = 1300;
+		var h2 = 550;
+		var min = 30;
+		var max = 300;
+		var cmin = 0;
+		var cmax = 255;
+
+		
+		var xScale3 = d3.scale.ordinal()
+							.domain(d3.range(monData2.length))
+							.rangeRoundBands([0, w2], 0);
+		
+		var xScale4 = d3.scale.ordinal()
+							.domain(d3.range(12))
+							.rangeRoundBands([60.5, 1239.5], 0);
+		
+		var yScale2 = d3.scale.linear()
+							.domain([0, d3.max(monData2, function(d){ return d; })])
+							.range([0, h2-190]);
+		
+		var colorScale = d3.scale.linear()
+								 .domain([min,max])
+								 .range([cmin,cmax]);
+		
+		var pushingLineData = function(){
+			
+			lineData = [];
+			
+			for(var i = 0; i < monData2.length; i++){
+				
+				var coord = {x: xScale3(i), y: h2 - yScale2(monData2[i]) - 100}
+				lineData.push(coord);
+			}
+			
+			lineData2 = [];
+			
+			for(var i = 0; i < monData2.length; i++){
+				
+				var coord = {x: xScale3(i), y: h2 - yScale2(monData3[i]) - 100}
+				lineData2.push(coord);
+			}
+		}
+		
+		pushingLineData();	
+		
+		var lineFunction = d3.svg.line()                         
+									.x(function(d) { return d.x; })                        
+									.y(function(d) { return d.y; })                        
+									.interpolate("linear");			
+		
+		var svg1 = d3.select('#graph2')
+						.append('svg')
+					   .attr('class', 'svg1')
+						.attr('width', w2)
+						.attr('height', h2);							
+		
+		var circle = svg1.selectAll('circle.circle1').data(monData2).enter().append('circle')
+							 .attr('class', 'circle1')
+							 .attr('cx', function(d, i){ return xScale3(i); })
+							 .attr('cy', function(d){ return h2 - yScale2(d)-100 })
+		                .attr('r', 2)
+							 .attr('fill', function(d){ if(d == 0){ return 'rgba(255, 255, 255, 0)'; } else{ return 'rgb(120, 148, 212)';  } });
+		
+		var circle = svg1.selectAll('circle.circle2').data(monData3).enter().append('circle')
+							 .attr('class', 'circle2')
+							 .attr('cx', function(d, i){ return xScale3(i); })
+							 .attr('cy', function(d){ return h2 - yScale2(d)-100 })
+		                .attr('r', 2)
+							 .attr('fill', function(d){ if(d == 0){ return 'rgba(255, 255, 255, 0)'; } else{ return 'rgb(239, 138, 208)';  } });	
+		
+		var lineGraph = svg1.append("path")
+									 .attr("class", "path1")
+                            .attr("d", lineFunction(lineData))
+                            .attr("stroke", "rgba(161, 141, 227, 0.15)")
+                            .attr("stroke-width", 1)
+                            .attr("fill", "rgba(27, 113, 212, 0.13)");
+		
+		var lineGraph2 = svg1.append("path")
+									 .attr("class", "path2")
+                            .attr("d", lineFunction(lineData2))
+                            .attr("stroke", "rgba(161, 141, 227, 0.15)")
+                            .attr("stroke-width", 1)
+                            .attr("fill", "rgba(212, 27, 141, 0.13)");
+		
+		var line = svg1.selectAll('line.line1').data(numLine).enter().append('line')
+								.attr('x1', 60.5)
+								.attr('x2', 1239.5)
+								.attr('y1', function(d){ return h2 - yScale2(d[0]) - 100 })
+								.attr('y2', function(d){ return h2 - yScale2(d[0]) - 100 })
+								.attr("stroke-width", 1)
+								.attr('stroke', 'rgba(99, 100, 91, 0.1)');		
+		
+		var text4 = svg1.selectAll('text.numT').data(numLine).enter().append('text')
+						  .attr('class', 'numT')
+						  .text(function(d){ return d[1]; })
+						  .attr('text-anchor', 'middle')
+						  .attr('x', 111)
+			  			  .attr('y', function(d){ return h2 - yScale2(d[0]) -105 })
+						  .attr('font-family', 'sans-serif')
+						  .attr('font-size', '13px')
+						  .attr('fill', 'rgba(99, 100, 91, 0.3)');
+		
+		var line2 = svg1.selectAll('line.line2').data(yearLine).enter().append('line')
+								.attr('x1', function(d, i){ return xScale3((i+1)*12) })
+								.attr('x2', function(d, i){ return xScale3((i+1)*12) })
+								.attr('y1', 50)
+								.attr('y2', 480)
+								.attr("stroke-width", 1)
+								.attr('stroke', function(d){ if(d == 0){ return 'rgba(255, 255, 255, 0)'; } else{ return 'rgba(99, 100, 91, 0.1)';  } });		
+		
+		var text5 = svg1.selectAll('text.numS').data(school).enter().append('text')
+						  .attr('class', 'numS')
+						  .text(function(d){ return d[1]; })
+						  .attr('text-anchor', 'middle')
+						  .attr('x', function(d){ return xScale3(d[0]*12); })
+			  			  .attr('y', 497)
+						  .attr('font-family', 'sans-serif')
+						  .attr('font-size', '13px')
+						  .attr('fill', 'rgba(99, 100, 91, 0.7)');
+		
+		var rect3 = svg1.selectAll('rect.rect3').data(school2).enter().append('rect')
+								  .attr('class', 'rect3')
+								  .attr('width', function(d){ return xScale3((d[1]-d[0])*12)-60; })
+								  .attr('height', 30)
+								  .attr('x', function(d){ return xScale3(d[0]*12); })
+								  .attr('y',477)
+								  .attr('stroke', 'rgba(255, 0, 255, 0)')
+								  .attr('fill', function(d, i){ return d[2]; });
+		
+		var text6 = svg1.selectAll('text.numY').data(yearLine2).enter().append('text')
+						  .attr('class', 'numY')
+						  .text(function(d){ return d[1]; })
+						  .attr('text-anchor', 'middle')
+						  .attr('x', function(d, i){ return xScale3((i)*12)+55 })
+			  			  .attr('y', 468)
+						  .attr('font-family', 'sans-serif')
+						  .attr('font-size', '13px')
+						  .attr('fill', 'rgba(99, 100, 91, 0.9)');
+		
+		var text8 = svg1.selectAll('text.text8').data(exp2).enter().append('text')
+								  .attr('class', 'text8')
+								  .text(function(d){ return d[0]; })
+								  .attr('text-anchor', 'middle')
+								  .attr('x', function(d){ return d[1]; })
+								  .attr('y', function(d){ return d[2]; })
+								  .attr('font-family', 'sans-serif')
+								  .attr('font-size', '13px')
+								  .attr('text-anchor', 'end')
+								  .attr('fill', function(d){ return d[3]; });
+	
+		
+		
+//3번그래프
+		
+		var w3 = 900;
+		var h3 = 700;
+		var radius = h3 / 3;
+		
+		var Pdata = [{'num': 1166, 'category': '일기', 'color': 'rgba(118, 181, 255, 0.4)'}, 
+						 {'num': 102, 'category': '음악리뷰', 'color': 'rgba(118, 123, 255, 0.4)'}, 
+						 {'num': 30, 'category': '영화리뷰', 'color': 'rgba(171, 118, 255, 0.4)'}, 
+						 {'num': 44, 'category': '만화리뷰', 'color': 'rgba(218, 118, 255, 0.4)'}, 
+						 {'num': 40, 'category': '드라마리뷰', 'color': 'rgba(250, 118, 255, 0.4)'}, 
+						 {'num': 18, 'category': '공부', 'color': 'rgba(255, 118, 202, 0.4)'}, 
+						 {'num': 500, 'category': '그림', 'color': 'rgba(255, 118, 192, 0.4)'}];
+
+		var arc = d3.svg.arc()
+			 .innerRadius(radius - 50)
+			 .outerRadius(radius);
+
+		var pie = d3.layout.pie()
+			 .padAngle(.06)
+			 .value(function(d) { return d.num; });
+
+		var color = d3.scale.category10();
+
+		var svg3 = d3.select("#graph3").append("svg")
+			 .attr("width", w3)
+			 .attr("height", h3)
+		  	 .append("g")
+			 .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+
+		svg3.selectAll("path").data(pie(Pdata)).enter().append("path")
+			 .style("fill", function(d, i){ return 'rgba('+ (255-i*20) + ', 118, 192, 0.4)'; })
+			 .attr("d", arc);
+
+		
+
+		
+		
+		</script>
 	
 	
 </html>
+
+
